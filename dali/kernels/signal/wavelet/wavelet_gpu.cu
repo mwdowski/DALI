@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "dali/kernels/signal/wavelet/wavelet_gpu.cuh"
 #include <cmath>
 #include <complex>
 #include <vector>
@@ -21,6 +20,7 @@
 #include "dali/core/format.h"
 #include "dali/kernels/kernel.h"
 #include "dali/kernels/signal/wavelet/mother_wavelet.cuh"
+#include "dali/kernels/signal/wavelet/wavelet_gpu.cuh"
 
 namespace dali {
 namespace kernels {
@@ -35,8 +35,8 @@ struct SampleDesc {
 };
 
 template <typename T>
-__global__ void ComputeWavelet(const SampleDesc<T>* sample_data,
-                               T begin, T sampling_rate, T b, MotherWavelet<T> wavelet) {
+__global__ void ComputeWavelet(const SampleDesc<T> *sample_data, T begin, T sampling_rate, T b,
+                               MotherWavelet<T> wavelet) {
   const int64_t block_size = blockDim.x * blockDim.y;
   const int64_t tid = threadIdx.y * blockDim.x + threadIdx.x;
   const T t = begin + (T)tid / sampling_rate;
@@ -48,8 +48,7 @@ template <typename T>
 WaveletGpu<T>::~WaveletGpu() = default;
 
 template <typename T>
-KernelRequirements WaveletGpu<T>::Setup(KernelContext &context,
-                                        const WaveletArgs<T> &args) {
+KernelRequirements WaveletGpu<T>::Setup(KernelContext &context, const WaveletArgs<T> &args) {
   ScratchpadEstimator se;
   se.add<mm::memory_kind::host, SampleDesc<T>>(1);
   se.add<mm::memory_kind::device, SampleDesc<T>>(1);
@@ -59,22 +58,19 @@ KernelRequirements WaveletGpu<T>::Setup(KernelContext &context,
 }
 
 template <typename T>
-void WaveletGpu<T>::Run(KernelContext &context,
-                        const OutListGPU<T, 1> &out,
-                        const InListGPU<T, 1> &a,
-                        const WaveletArgs<T> &args) {
-  auto* sample_data = context.scratchpad->AllocateHost<SampleDesc<T>>(1);
+void WaveletGpu<T>::Run(KernelContext &context, const OutListGPU<T, 1> &out,
+                        const InListGPU<T, 1> &a, const WaveletArgs<T> &args) {
+  auto *sample_data = context.scratchpad->AllocateHost<SampleDesc<T>>(1);
 
   sample_data[0].out = out.tensor_data(0);
   sample_data[0].a = a.tensor_data(0);
   sample_data[0].size_a = volume(a.tensor_shape(0));
   auto in_size = (args.end - args.begin) * args.sampling_rate;
-  sample_data[0].size_out =  in_size * sample_data[0].size_a;
+  sample_data[0].size_out = in_size * sample_data[0].size_a;
 
-  auto* sample_data_gpu = context.scratchpad->AllocateGPU<SampleDesc<T>>(1);
-  CUDA_CALL(
-    cudaMemcpyAsync(sample_data_gpu, sample_data, sizeof(SampleDesc<T>),
-                    cudaMemcpyHostToDevice, context.gpu.stream));
+  auto *sample_data_gpu = context.scratchpad->AllocateGPU<SampleDesc<T>>(1);
+  CUDA_CALL(cudaMemcpyAsync(sample_data_gpu, sample_data, sizeof(SampleDesc<T>),
+                            cudaMemcpyHostToDevice, context.gpu.stream));
 
   dim3 block(sample_data[0].size_a);
   dim3 grid(in_size);

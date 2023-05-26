@@ -21,7 +21,7 @@
 #include "dali/core/format.h"
 #include "dali/core/util.h"
 #include "dali/kernels/kernel.h"
-#include "dali/kernels/signal/wavelets/cwt_args.h"
+#include "dali/kernels/signal/wavelet/cwt_args.h"
 
 namespace dali {
 namespace kernels {
