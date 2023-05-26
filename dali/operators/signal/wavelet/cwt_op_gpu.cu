@@ -20,10 +20,7 @@
 #include "dali/kernels/kernel_params.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/kernels/signal/wavelet/cwt_gpu.h"
-#include "dali/kernels/signal/wavelet/wavelet_args.h"
 #include "dali/operators/signal/wavelet/cwt_op.h"
-#include "dali/operators/signal/wavelet/wavelet_name.h"
-#include "dali/pipeline/data/types.h"
 #include "dali/pipeline/data/views.h"
 
 namespace dali {
@@ -38,8 +35,8 @@ DALI_SCHEMA(Cwt)
 template <typename T>
 struct CwtImplGPU : public OpImplBase<GPUBackend> {
  public:
-  using CwtArgs = kernels::signal::CwtArgs<T>;
-  using CwtKernel = kernels::signal::CwtGpu<T>;
+  using CwtArgs = kernels::signal::wavelet::CwtArgs<T>;
+  using CwtKernel = kernels::signal::wavelet::CwtGpu<T>;
 
   explicit CwtImplGPU(CwtArgs args) : args_(std::move(args)) {
     kmgr_cwt_.Resize<CwtKernel>(1);

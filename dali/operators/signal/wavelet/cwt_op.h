@@ -18,7 +18,6 @@
 #include <memory>
 #include <vector>
 #include "dali/core/common.h"
-#include "dali/kernels/kernel_manager.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/pipeline/operator/common.h"
 #include "dali/pipeline/operator/operator.h"
@@ -47,7 +46,7 @@ class Cwt : public Operator<Backend> {
   using Operator<Backend>::RunImpl;
 
   kernels::KernelManager kmgr_;
-  kernels::signal::CwtArgs<float> args_;
+  kernels::signal::wavelet::CwtArgs<float> args_;
 
   std::unique_ptr<OpImplBase<Backend>> impl_;
   DALIDataType type_ = DALI_NO_TYPE;

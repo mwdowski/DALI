@@ -20,11 +20,8 @@
 #include "dali/core/format.h"
 #include "dali/core/static_switch.h"
 #include "dali/kernels/kernel.h"
-#include "dali/kernels/kernel_params.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/kernels/signal/wavelet/cwt_gpu.h"
-#include "dali/operators/signal/wavelet/cwt_op.h"
-#include "dali/pipeline/data/views.h"
 
 namespace dali {
 namespace kernels {
