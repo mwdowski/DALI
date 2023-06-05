@@ -38,35 +38,8 @@ struct CwtImplGPU : public OpImplBase<GPUBackend> {
     kmgr_cwt_.Resize<CwtKernel>(1);
   }
 
-  bool SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) override {
-    const auto &input = ws.Input<GPUBackend>(0);
-    auto in_view = view<const T>(input);
-
-    auto type = type2id<T>::value;
-
-    kernels::KernelContext ctx;
-    ctx.gpu.stream = ws.stream();
-
-    auto &req = kmgr_cwt_.Setup<CwtKernel>(0, ctx, in_view);
-    output_desc.resize(1);
-    output_desc[0].type = type;
-    output_desc[0].shape = req.output_shapes[0];
-
-    return true;
-  }
-
-  void RunImpl(Workspace &ws) override {
-    const auto &input = ws.Input<GPUBackend>(0);
-    auto &output = ws.Output<GPUBackend>(0);
-
-    auto in_view = view<const T>(input);
-    auto out_view = view<T>(output);
-
-    kernels::KernelContext ctx;
-    ctx.gpu.stream = ws.stream();
-
-    kmgr_cwt_.Run<CwtKernel>(0, ctx, out_view, in_view, args_);
-  }
+  bool SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) override;
+  void RunImpl(Workspace &ws) override;
 
  private:
   CwtArgs args_;
@@ -74,6 +47,61 @@ struct CwtImplGPU : public OpImplBase<GPUBackend> {
   std::vector<OutputDesc> cwt_out_desc_;
   TensorList<GPUBackend> cwt_out_;
 };
+
+template <typename T>
+bool CwtImplGPU<T>::SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) {
+  const auto &input = ws.Input<GPUBackend>(0);
+  auto in_view = view<const T>(input);
+
+  auto type = type2id<T>::value;
+
+  kernels::KernelContext ctx;
+  ctx.gpu.stream = ws.stream();
+
+  auto &req = kmgr_cwt_.Setup<CwtKernel>(0, ctx, in_view);
+  output_desc.resize(1);
+  output_desc[0].type = type;
+  output_desc[0].shape = req.output_shapes[0];
+
+  return true;
+}
+
+template <typename T>
+void CwtImplGPU<T>::RunImpl(Workspace &ws) {
+  const auto &input = ws.Input<GPUBackend>(0);
+  auto &output = ws.Output<GPUBackend>(0);
+
+  auto in_view = view<const T>(input);
+  auto out_view = view<T>(output);
+
+  kernels::KernelContext ctx;
+  ctx.gpu.stream = ws.stream();
+
+  kmgr_cwt_.Run<CwtKernel>(0, ctx, out_view, in_view, args_);
+}
+
+template <>
+bool Cwt<GPUBackend>::SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) {
+  output_desc.resize(1);
+  const auto &input = ws.Input<GPUBackend>(0);
+  auto type = input.type();
+  TYPE_SWITCH(type, type2id, T, (float), (
+      using Impl = CwtImplGPU<T>;
+      if (!impl_ || type != type_) {
+        impl_ = std::make_unique<Impl>(args_);
+        type_ = type;
+      }
+  ), DALI_FAIL(make_string("Unsupported data type: ", type)));  // NOLINT
+
+  impl_->SetupImpl(output_desc, ws);
+  return true;
+}
+
+template <>
+void Cwt<GPUBackend>::RunImpl(Workspace &ws) {
+  assert(impl_ != nullptr);
+  impl_->RunImpl(ws);
+}
 
 DALI_REGISTER_OPERATOR(Cwt, Cwt<GPUBackend>, GPU);
 

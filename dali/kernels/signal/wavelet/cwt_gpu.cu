@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cmath>
-#include <complex>
+#include <memory>
+#include <utility>
 #include <vector>
 #include "dali/core/common.h"
 #include "dali/core/error_handling.h"
 #include "dali/core/format.h"
+#include "dali/core/static_switch.h"
 #include "dali/kernels/kernel.h"
+#include "dali/kernels/kernel_params.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/kernels/signal/wavelet/cwt_gpu.h"
+#include "dali/operators/signal/wavelet/cwt_op.h"
+#include "dali/pipeline/data/views.h"
 
 namespace dali {
 namespace kernels {
@@ -44,7 +48,8 @@ __global__ void CwtKernel(const SampleDesc<T> *sample_data, CwtArgs<T> args) {
   const int64_t tid = threadIdx.y * blockDim.x + threadIdx.x;
 
   for (int64_t idx = offset + tid; idx < sample.size; idx += grid_size) {
-    sample.out[idx] = sample.in[idx] * args.a;
+    // sample.out[idx] = sample.in[idx] * args.a;
+    sample.out[idx] = 30;
   }
 }
 

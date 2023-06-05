@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DALI_OPERATORS_SIGNAL_WAVELETS_CWT_H_
-#define DALI_OPERATORS_SIGNAL_WAVELETS_CWT_H_
+#ifndef DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
+#define DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
 
 #include <memory>
 #include <vector>
 #include "dali/core/common.h"
+#include "dali/kernels/kernel_manager.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/pipeline/operator/common.h"
 #include "dali/pipeline/operator/operator.h"
@@ -39,16 +40,8 @@ class Cwt : public Operator<Backend> {
   bool CanInferOutputs() const override {
     return true;
   }
-
-  bool SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) override {
-    assert(impl_ != nullptr);
-    return impl_->SetupImpl(output_desc, ws);
-  }
-
-  void RunImpl(Workspace &ws) override {
-    assert(impl_ != nullptr);
-    impl_->RunImpl(ws);
-  }
+  bool SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) override;
+  void RunImpl(Workspace &ws) override;
 
   USE_OPERATOR_MEMBERS();
   using Operator<Backend>::RunImpl;
@@ -62,4 +55,4 @@ class Cwt : public Operator<Backend> {
 
 }  // namespace dali
 
-#endif  // DALI_OPERATORS_SIGNAL_WAVELETS_CWT_H_
+#endif  // DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
