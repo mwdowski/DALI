@@ -132,7 +132,8 @@ ShannonWavelet<T>::ShannonWavelet(const std::vector<T> &args) {
 
 template <typename T>
 __device__ T ShannonWavelet<T>::operator()(const T &t) const {
-  return sinc(t - 0.5) - 2 * sinc(2 * t - 1);
+  auto res = std::cos((T)(2.0 * M_PI) * fc * t) * std::sqrt(fb);
+  return t == 0.0 ? res : res * std::sin(t * fb * (T)(M_PI)) / (t * fb * (T)(M_PI));
 }
 
 template class ShannonWavelet<float>;
@@ -151,7 +152,9 @@ FbspWavelet<T>::FbspWavelet(const std::vector<T> &args) {
 
 template <typename T>
 __device__ T FbspWavelet<T>::operator()(const T &t) const {
-  return std::sqrt(fb) * std::pow(sinc(t / std::pow(fb, m)), m) * std::exp(2 * M_PI * fc * t);
+  auto res = std::cos((T)(2.0 * M_PI) * fc * t) * std::sqrt(fb);
+  return t == 0.0 ? res :
+                    res * std::pow(std::sin((T)(M_PI)*t * fb / m) / ((T)(M_PI)*t * fb / m), m);
 }
 
 template class FbspWavelet<float>;

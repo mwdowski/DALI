@@ -23,6 +23,8 @@
 #include "dali/core/util.h"
 #include "dali/kernels/kernel.h"
 
+#include <vector>
+
 namespace dali {
 namespace kernels {
 namespace signal {
