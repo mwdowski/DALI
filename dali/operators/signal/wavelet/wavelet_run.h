@@ -20,23 +20,19 @@
 #include "dali/core/geom/mat.h"
 #include "dali/core/static_switch.h"
 #include "dali/kernels/kernel_manager.h"
-#include "dali/pipeline/operator/operator.h"
 #include "dali/kernels/signal/wavelet/mother_wavelet.cuh"
 #include "dali/kernels/signal/wavelet/wavelet_gpu.cuh"
+#include "dali/pipeline/operator/operator.h"
 
 namespace dali {
 
 // setups and runs kernel for specific wavelet type
-template <typename T, template <typename> class W >
-void RunWaveletKernel(kernels::KernelManager &kmgr,
-                      size_t size,
-                      size_t device,
-                      kernels::KernelContext &ctx,
-                      TensorListView<StorageGPU, T> &out,
-                      TensorListView<StorageGPU, const T>  &a,
+template <typename T, template <typename> class W>
+void RunWaveletKernel(kernels::KernelManager &kmgr, size_t size, size_t device,
+                      kernels::KernelContext &ctx, TensorListView<StorageGPU, T> &out,
+                      TensorListView<StorageGPU, const T> &a,
                       TensorListView<StorageGPU, const T> &b,
-                      const kernels::signal::WaveletSpan<T> &span,
-                      const std::vector<T> &args) {
+                      const kernels::signal::WaveletSpan<T> &span, const std::vector<T> &args) {
   using Kernel = kernels::signal::WaveletGpu<T, W>;
   kmgr.template Resize<Kernel>(1);
   kmgr.Setup<Kernel>(0, ctx, a, b, span, args);
@@ -45,46 +41,49 @@ void RunWaveletKernel(kernels::KernelManager &kmgr,
 
 // translates wavelet name to type and runs RunWaveletKernel() for that type
 template <typename T>
-void RunForName(const DALIWaveletName &name,
-                kernels::KernelManager &kmgr,
-                size_t size,
-                size_t device,
-                kernels::KernelContext &ctx,
-                TensorListView<StorageGPU, T> &out,
-                TensorListView<StorageGPU, const T> &a,
-                TensorListView<StorageGPU, const T> &b,
-                const kernels::signal::WaveletSpan<T> &span,
-                const std::vector<T> &args) {
-  switch (name) {
-  case DALIWaveletName::DALI_HAAR:
-    using kernels::signal::HaarWavelet;
-    RunWaveletKernel<T, HaarWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
-    break;
-  case DALIWaveletName::DALI_GAUS:
-    using kernels::signal::GaussianWavelet;
-    RunWaveletKernel<T, GaussianWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
-    break;
-  case DALIWaveletName::DALI_MEXH:
-    using kernels::signal::MexicanHatWavelet;
-    RunWaveletKernel<T, MexicanHatWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
-    break;
-  case DALIWaveletName::DALI_MORL:
-    using kernels::signal::MorletWavelet;
-    RunWaveletKernel<T, MorletWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
-    break;
-  case DALIWaveletName::DALI_SHAN:
-    using kernels::signal::ShannonWavelet;
-    RunWaveletKernel<T, ShannonWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
-    break;
-  case DALIWaveletName::DALI_FBSP:
-    using kernels::signal::FbspWavelet;
-    RunWaveletKernel<T, FbspWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
-    break;
-  default:
+void RunForName(const std::string &name, kernels::KernelManager &kmgr, size_t size, size_t device,
+                kernels::KernelContext &ctx, TensorListView<StorageGPU, T> &out,
+                TensorListView<StorageGPU, const T> &a, TensorListView<StorageGPU, const T> &b,
+                const kernels::signal::WaveletSpan<T> &span, const std::vector<T> &args) {
+  if (name == "HAAR") {
+    RunWaveletKernel<T, kernels::signal::HaarWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                      args);
+  } else if (name == "DB") {
+    throw new std::logic_error("Not implemented.");
+    RunWaveletKernel<T, kernels::signal::DaubechiesWavelet>(kmgr, size, device, ctx, out, a, b,
+                                                            span, args);
+  } else if (name == "SYM") {
+    throw new std::logic_error("Not implemented.");
+    RunWaveletKernel<T, kernels::signal::SymletWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                        args);
+  } else if (name == "COIF") {
+    throw new std::logic_error("Not implemented.");
+    RunWaveletKernel<T, kernels::signal::CoifletWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                         args);
+  } else if (name == "MEY") {
+    RunWaveletKernel<T, kernels::signal::MeyerWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                       args);
+  } else if (name == "GAUS") {
+    throw new std::logic_error("Not implemented.");
+    RunWaveletKernel<T, kernels::signal::GaussianWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                          args);
+  } else if (name == "MEXH") {
+    RunWaveletKernel<T, kernels::signal::MexicanHatWavelet>(kmgr, size, device, ctx, out, a, b,
+                                                            span, args);
+  } else if (name == "MORL") {
+    RunWaveletKernel<T, kernels::signal::MorletWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                        args);
+  } else if (name == "SHAN") {
+    RunWaveletKernel<T, kernels::signal::ShannonWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                         args);
+  } else if (name == "FBSP") {
+    RunWaveletKernel<T, kernels::signal::FbspWavelet>(kmgr, size, device, ctx, out, a, b, span,
+                                                      args);
+  } else {
     throw new std::invalid_argument("Unknown wavelet name.");
   }
 }
 
 }  // namespace dali
 
-#endif  // DALI_OPERATORS_SIGNAL_WAVELET_WAVELET_RUN_H_
+#endif  // DALI_OPERATORS_SIGNAL_WAVELET_RUN_H_

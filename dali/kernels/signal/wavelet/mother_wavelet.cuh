@@ -23,6 +23,8 @@
 #include "dali/core/util.h"
 #include "dali/kernels/kernel.h"
 
+#include <vector>
+
 namespace dali {
 namespace kernels {
 namespace signal {
@@ -33,40 +35,86 @@ namespace signal {
 
 template <typename T>
 class HaarWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   HaarWavelet() = default;
-  explicit HaarWavelet(const std::vector<T> &args);
+  HaarWavelet(const std::vector<T> &args);
   ~HaarWavelet() = default;
 
-  __device__ T operator()(const T &t) const;
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
+};
+
+template <typename T>
+class DaubechiesWavelet {
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
+ public:
+  DaubechiesWavelet() = default;
+  DaubechiesWavelet(const std::vector<T> &args);
+  ~DaubechiesWavelet() = default;
+
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
+};
+
+template <typename T>
+class SymletWavelet {
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
+ public:
+  SymletWavelet() = default;
+  SymletWavelet(const std::vector<T> &args);
+  ~SymletWavelet() = default;
+
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
+};
+
+template <typename T>
+class CoifletWavelet {
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
+ public:
+  CoifletWavelet() = default;
+  CoifletWavelet(const std::vector<T> &args);
+  ~CoifletWavelet() = default;
+
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
+};
+
+template <typename T>
+class MeyerWavelet {
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
+ public:
+  MeyerWavelet() = default;
+  MeyerWavelet(const std::vector<T> &args);
+  ~MeyerWavelet() = default;
+
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
 };
 
 template <typename T>
 class GaussianWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   GaussianWavelet() = default;
-  explicit GaussianWavelet(const std::vector<T> &args);
+  GaussianWavelet(const std::vector<T> &args);
   ~GaussianWavelet() = default;
 
-  __device__ T operator()(const T &t) const;
- private:
-  T n;
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
 };
 
 template <typename T>
 class MexicanHatWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   MexicanHatWavelet() = default;
-  explicit MexicanHatWavelet(const std::vector<T> &args);
+  MexicanHatWavelet(const std::vector<T> &args);
   ~MexicanHatWavelet() = default;
 
-  __device__ T operator()(const T &t) const;
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
 
  private:
   T sigma;
@@ -74,14 +122,14 @@ class MexicanHatWavelet {
 
 template <typename T>
 class MorletWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   MorletWavelet() = default;
-  explicit MorletWavelet(const std::vector<T> &args);
+  MorletWavelet(const std::vector<T> &args);
   ~MorletWavelet() = default;
 
-  __device__ T operator()(const T &t) const;
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
 
  private:
   T C;
@@ -89,30 +137,26 @@ class MorletWavelet {
 
 template <typename T>
 class ShannonWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   ShannonWavelet() = default;
-  explicit ShannonWavelet(const std::vector<T> &args);
+  ShannonWavelet(const std::vector<T> &args);
   ~ShannonWavelet() = default;
 
-  __device__ T operator()(const T &t) const;
-
- private:
-  T fb;
-  T fc;
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
 };
 
 template <typename T>
 class FbspWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   FbspWavelet() = default;
-  explicit FbspWavelet(const std::vector<T> &args);
+  FbspWavelet(const std::vector<T> &args);
   ~FbspWavelet() = default;
 
-  __device__ T operator()(const T &t) const;
+  __device__ T operator()(const T &t, const T &a, const T &b) const;
 
  private:
   T m;
