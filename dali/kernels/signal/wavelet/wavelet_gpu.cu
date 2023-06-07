@@ -107,17 +107,18 @@ DLL_PUBLIC void WaveletGpu<T, W>::Run(KernelContext &ctx, OutListGPU<T> &out, co
     sample.in = ctx.scratchpad->AllocateGPU<T>(sample.size_in);
     max_size_in = std::max(max_size_in, sample.size_in);
   }
+}
 
-  auto *sample_data_gpu = std::get<0>(ctx.scratchpad->ToContiguousGPU(ctx.gpu.stream, sample_data));
+auto *sample_data_gpu = std::get<0>(ctx.scratchpad->ToContiguousGPU(ctx.gpu.stream, sample_data));
 
-  dim3 block(32, 32);
-  const int64_t block_size = block.x * block.y;
-  dim3 grid1((max_size_in + block_size - 1) / block_size, num_samples);
-  dim3 grid2((max_size_in + block_size - 1) / block_size, max_size_a, num_samples);
+dim3 block(32, 32);
+const int64_t block_size = block.x * block.y;
+dim3 grid1((max_size_in + block_size - 1) / block_size, num_samples);
+dim3 grid2((max_size_in + block_size - 1) / block_size, max_size_a, num_samples);
 
-  ComputeInputSamples<<<grid1, block, 0, ctx.gpu.stream>>>(sample_data_gpu);
-  auto shared_mem_size = (block_size + 1) * sizeof(T);
-  ComputeWavelet<<<grid2, block, shared_mem_size, ctx.gpu.stream>>>(sample_data_gpu, wavelet_);
+ComputeInputSamples<<<grid1, block, 0, ctx.gpu.stream>>>(sample_data_gpu);
+auto shared_mem_size = (block_size + 1) * sizeof(T);
+ComputeWavelet<<<grid2, block, shared_mem_size, ctx.gpu.stream>>>(sample_data_gpu, wavelet_);
 }
 
 template <typename T, template <typename> class W>
