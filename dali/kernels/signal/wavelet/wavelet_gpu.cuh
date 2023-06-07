@@ -64,8 +64,9 @@ struct SampleDesc {
   int64_t size_a = 0;
   const T *b = nullptr;
   int64_t size_b = 0;
-  T *out = nullptr;
+  T *in = nullptr;
   int64_t size_in = 0;
+  T *out = nullptr;
   WaveletSpan<T> span;
 };
 
