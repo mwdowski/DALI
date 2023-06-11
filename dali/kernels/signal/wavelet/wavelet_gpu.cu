@@ -65,8 +65,8 @@ __global__ void ComputeWavelet(const SampleDesc<T> *sample_data, W<T> wavelet) {
 // translate input range information to input samples
 template <typename T>
 __global__ void ComputeInputSamples(const SampleDesc<T> *sample_data) {
-  const int64_t t_id =
-      blockDim.x * blockDim.y * blockIdx.x + threadIdx.y * blockDim.x + threadIdx.x;
+  const int64_t block_size = blockDim.x * blockDim.y;
+  const int64_t t_id = block_size * blockIdx.x + threadIdx.y * blockDim.x + threadIdx.x;
   auto &sample = sample_data[blockIdx.y];
   if (t_id >= sample.size_in)
     return;
@@ -104,7 +104,8 @@ DLL_PUBLIC void WaveletGpu<T, W>::Run(KernelContext &ctx, OutListGPU<T> &out, co
     sample.b = b.tensor_data(i);
     sample.size_b = b.shape.tensor_size(i);
     sample.span = span;
-    sample.size_in = std::ceil((sample.span.end - sample.span.begin) * sample.span.sampling_rate) + 1;
+    sample.size_in =
+        std::ceil((sample.span.end - sample.span.begin) * sample.span.sampling_rate) + 1;
     sample.in = ctx.scratchpad->AllocateGPU<T>(sample.size_in);
     max_size_in = std::max(max_size_in, sample.size_in);
   }
