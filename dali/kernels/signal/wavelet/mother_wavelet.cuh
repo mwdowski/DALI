@@ -23,8 +23,6 @@
 #include "dali/core/util.h"
 #include "dali/kernels/kernel.h"
 
-#include <vector>
-
 namespace dali {
 namespace kernels {
 namespace signal {
@@ -39,7 +37,7 @@ class HaarWavelet {
 
  public:
   HaarWavelet() = default;
-  HaarWavelet(const std::vector<T> &args);
+  explicit HaarWavelet(const std::vector<T> &args);
   ~HaarWavelet() = default;
 
   __device__ T operator()(const T &t) const;
@@ -51,7 +49,7 @@ class MeyerWavelet {
 
  public:
   MeyerWavelet() = default;
-  MeyerWavelet(const std::vector<T> &args);
+  explicit MeyerWavelet(const std::vector<T> &args);
   ~MeyerWavelet() = default;
 
   __device__ T operator()(const T &t) const;
@@ -78,7 +76,7 @@ class MexicanHatWavelet {
 
  public:
   MexicanHatWavelet() = default;
-  MexicanHatWavelet(const std::vector<T> &args);
+  explicit MexicanHatWavelet(const std::vector<T> &args);
   ~MexicanHatWavelet() = default;
 
   __device__ T operator()(const T &t) const;
@@ -93,7 +91,7 @@ class MorletWavelet {
 
  public:
   MorletWavelet() = default;
-  MorletWavelet(const std::vector<T> &args);
+  explicit MorletWavelet(const std::vector<T> &args);
   ~MorletWavelet() = default;
 
   __device__ T operator()(const T &t) const;
@@ -108,7 +106,7 @@ class ShannonWavelet {
 
  public:
   ShannonWavelet() = default;
-  ShannonWavelet(const std::vector<T> &args);
+  explicit ShannonWavelet(const std::vector<T> &args);
   ~ShannonWavelet() = default;
 
   __device__ T operator()(const T &t) const;
@@ -120,7 +118,7 @@ class FbspWavelet {
 
  public:
   FbspWavelet() = default;
-  FbspWavelet(const std::vector<T> &args);
+  explicit FbspWavelet(const std::vector<T> &args);
   ~FbspWavelet() = default;
 
   __device__ T operator()(const T &t) const;

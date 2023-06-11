@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cmath>
+#include <vector>
 #include "dali/core/math_util.h"
 #include "dali/kernels/signal/wavelet/mother_wavelet.cuh"
 
@@ -50,12 +51,13 @@ MeyerWavelet<T>::MeyerWavelet(const std::vector<T> &args) {
 
 template <typename T>
 __device__ T MeyerWavelet<T>::operator()(const T &t) const {
-  T psi1 = (4 / (3 * M_PI) * t * std::cos((2 * M_PI) / 3 * t) -
-            1 / M_PI * std::sin((4 * M_PI) / 3 * t)) /
-           (t - 16 / 9 * std::pow(t, 3.0));
-  T psi2 =
-      (8 / (3 * M_PI) * t * std::cos(8 * M_PI / 3 * t) + 1 / M_PI * std::sin((4 * M_PI) / 3) * t) /
-      (t - 64 / 9 * std::pow(t, 3.0));
+  T tt = t - 0.5;
+  T psi1 = (4.0 / (3.0 * M_PI) * tt * std::cos((2.0 * M_PI) / 3.0 * tt) -
+            1.0 / M_PI * std::sin((4.0 * M_PI) / 3.0 * tt)) /
+           (tt - 16.0 / 9.0 * std::pow(tt, 3.0));
+  T psi2 = (8.0 / (3.0 * M_PI) * tt * std::cos(8.0 * M_PI / 3.0 * tt) +
+            1.0 / M_PI * std::sin((4.0 * M_PI) / 3.0) * tt) /
+           (tt - 64.0 / 9.0 * std::pow(tt, 3.0));
   return psi1 + psi2;
 }
 
@@ -72,8 +74,8 @@ MexicanHatWavelet<T>::MexicanHatWavelet(const std::vector<T> &args) {
 
 template <typename T>
 __device__ T MexicanHatWavelet<T>::operator()(const T &t) const {
-  return 2 / (std::sqrt(3 * sigma) * std::pow(M_PI, 0.25)) * (1 - std::pow(t / sigma, 2.0)) *
-         std::exp(-std::pow(t, 2.0) / (2 * std::pow(sigma, 2.0)));
+  return 2.0 / (std::sqrt(3.0 * sigma) * std::pow(M_PI, 0.25)) * (1.0 - std::pow(t / sigma, 2.0)) *
+         std::exp(-std::pow(t, 2.0) / (2.0 * std::pow(sigma, 2.0)));
 }
 
 template class MexicanHatWavelet<float>;
@@ -97,8 +99,9 @@ template class MorletWavelet<double>;
 
 template <typename T>
 ShannonWavelet<T>::ShannonWavelet(const std::vector<T> &args) {
-  if (args.size() != 0) {
-    throw new std::invalid_argument("ShannonWavelet doesn't accept any arguments.");
+  if (args.size() != 2) {
+    throw new std::invalid_argument(
+        "ShannonWavelet accepts exactly 2 arguments -> fb, fc in that order.");
   }
 }
 
@@ -112,7 +115,7 @@ template class ShannonWavelet<double>;
 
 template <typename T>
 FbspWavelet<T>::FbspWavelet(const std::vector<T> &args) {
-  if (args.size() != 0) {
+  if (args.size() != 3) {
     throw new std::invalid_argument(
         "FbspWavelet accepts exactly 3 arguments -> m, fb, fc in that order.");
   }
