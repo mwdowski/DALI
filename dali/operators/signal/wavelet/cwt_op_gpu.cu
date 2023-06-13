@@ -31,8 +31,8 @@ DALI_SCHEMA(Cwt).DocStr("by MW").NumInput(1).NumOutput(1).AddArg("a", "costam",
 template <typename T>
 struct CwtImplGPU : public OpImplBase<GPUBackend> {
  public:
-  using CwtArgs = kernels::signal::wavelet::CwtArgs<T>;
-  using CwtKernel = kernels::signal::wavelet::CwtGpu<T>;
+  using CwtArgs = kernels::signal::CwtArgs<T>;
+  using CwtKernel = kernels::signal::CwtGpu<T>;
 
   explicit CwtImplGPU(CwtArgs args) : args_(std::move(args)) {
     kmgr_cwt_.Resize<CwtKernel>(1);

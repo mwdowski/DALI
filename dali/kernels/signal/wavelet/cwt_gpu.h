@@ -26,7 +26,6 @@
 namespace dali {
 namespace kernels {
 namespace signal {
-namespace wavelet {
 
 template <typename T = float>
 class DLL_PUBLIC CwtGpu {
@@ -42,7 +41,6 @@ class DLL_PUBLIC CwtGpu {
                       const InListGPU<T, DynamicDimensions> &in, const CwtArgs<T> &args);
 };
 
-}  // namespace wavelet
 }  // namespace signal
 }  // namespace kernels
 }  // namespace dali

@@ -29,7 +29,6 @@
 namespace dali {
 namespace kernels {
 namespace signal {
-namespace wavelet {
 
 template <typename T>
 struct SampleDesc {
@@ -48,8 +47,7 @@ __global__ void CwtKernel(const SampleDesc<T> *sample_data, CwtArgs<T> args) {
   const int64_t tid = threadIdx.y * blockDim.x + threadIdx.x;
 
   for (int64_t idx = offset + tid; idx < sample.size; idx += grid_size) {
-    // sample.out[idx] = sample.in[idx] * args.a;
-    sample.out[idx] = 30;
+    sample.out[idx] = sample.in[idx] * args.a;
   }
 }
 
@@ -97,7 +95,6 @@ void CwtGpu<T>::Run(KernelContext &context, const OutListGPU<T, DynamicDimension
 template class CwtGpu<float>;
 template class CwtGpu<double>;
 
-}  // namespace wavelet
 }  // namespace signal
 }  // namespace kernels
 }  // namespace dali

@@ -18,14 +18,12 @@
 namespace dali {
 namespace kernels {
 namespace signal {
-namespace wavelet {
 
 template <typename T = float>
 struct CwtArgs {
   T a;
 };
 
-}  // namespace wavelet
 }  // namespace signal
 }  // namespace kernels
 }  // namespace dali

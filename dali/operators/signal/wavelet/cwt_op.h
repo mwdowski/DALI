@@ -47,7 +47,7 @@ class Cwt : public Operator<Backend> {
   using Operator<Backend>::RunImpl;
 
   kernels::KernelManager kmgr_;
-  kernels::signal::wavelet::CwtArgs<float> args_;
+  kernels::signal::CwtArgs<float> args_;
 
   std::unique_ptr<OpImplBase<Backend>> impl_;
   DALIDataType type_ = DALI_NO_TYPE;
