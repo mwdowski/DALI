@@ -137,82 +137,21 @@ TensorListShape<> WaveletGpu<T, W>::GetOutputShape(const TensorListShape<> &a_sh
         {a_shape.tensor_shape(i).num_elements(), b_shape.tensor_shape(i).num_elements(), in_size});
     out_shape.set_tensor_shape(i, tshape);
   }
+  return out_shape;
+}
 
-  template <typename T, template <typename> class W>
-  DLL_PUBLIC void WaveletGpu<T, W>::Run(KernelContext & ctx, OutListGPU<T> & out,
-                                        const InListGPU<T> &a, const InListGPU<T> &b,
-                                        const WaveletSpan<T> &span) {
-    ENFORCE_SHAPES(a.shape, b.shape);
-
-    auto num_samples = a.num_samples();
-    // std::vector<SampleDesc<T>> sample_data = std::vector<SampleDesc<T>>(num_samples);
-    auto *sample_data = ctx.scratchpad->AllocateHost<SampleDesc<T>>(num_samples);
-    int64_t max_size_in = 0, max_size_a = 0;
-
-    for (int i = 0; i < num_samples; i++) {
-      auto &sample = sample_data[i];
-      sample.out = out.tensor_data(i);
-      sample.a = a.tensor_data(i);
-      sample.size_a = a.shape.tensor_size(i);
-      max_size_a = std::max(max_size_a, sample.size_a);
-      sample.b = b.tensor_data(i);
-      sample.size_b = b.shape.tensor_size(i);
-      sample.span = span;
-      sample.size_in = std::ceil((sample.span.end - sample.span.begin) * sample.span.sampling_rate);
-      max_size_in = std::max(max_size_in, sample.size_in);
-    }
-
-    // auto sample_data_gpu = std::get<0>(ctx.scratchpad->ToContiguousGPU(ctx.gpu.stream,
-    // sample_data));
-    auto *sample_data_gpu = ctx.scratchpad->AllocateGPU<SampleDesc<T>>(num_samples);
-    CUDA_CALL(cudaMemcpyAsync(sample_data_gpu, sample_data, num_samples * sizeof(SampleDesc<T>),
-                              cudaMemcpyHostToDevice, ctx.gpu.stream));
-
-    dim3 block(32, 32);
-    const int64_t block_size = block.x * block.y;
-    dim3 grid((max_size_in + block_size - 1) / block_size, max_size_a, num_samples);
-
-    ComputeWavelet<<<grid, block, 0, ctx.gpu.stream>>>(sample_data_gpu, wavelet_);
-  }
-
-  template <typename T, template <typename> class W>
-  TensorListShape<> WaveletGpu<T, W>::GetOutputShape(const TensorListShape<> &a_shape,
-                                                     const TensorListShape<> &b_shape,
-                                                     const WaveletSpan<T> &span) {
-    int N = a_shape.num_samples();
-    int in_size = std::ceil((span.end - span.begin) * span.sampling_rate);
-    TensorListShape<> out_shape(N, 3);
-    TensorShape<> tshape;
-    for (int i = 0; i < N; i++) {
-      // output tensor will be 3-dimensional of shape:
-      //  a coeffs x b coeffs x signal samples
-      tshape = TensorShape<>({a_shape.tensor_shape(i).num_elements(),
-                              b_shape.tensor_shape(i).num_elements(), in_size});
-      out_shape.set_tensor_shape(i, tshape);
-    }
-    return out_shape;
-  }
-
-  template class WaveletGpu<float, HaarWavelet>;
-  template class WaveletGpu<double, HaarWavelet>;
-  template class WaveletGpu<float, DaubechiesWavelet>;
-  template class WaveletGpu<double, DaubechiesWavelet>;
-  template class WaveletGpu<float, SymletWavelet>;
-  template class WaveletGpu<double, SymletWavelet>;
-  template class WaveletGpu<float, CoifletWavelet>;
-  template class WaveletGpu<double, CoifletWavelet>;
-  template class WaveletGpu<float, MeyerWavelet>;
-  template class WaveletGpu<double, MeyerWavelet>;
-  template class WaveletGpu<float, GaussianWavelet>;
-  template class WaveletGpu<double, GaussianWavelet>;
-  template class WaveletGpu<float, MexicanHatWavelet>;
-  template class WaveletGpu<double, MexicanHatWavelet>;
-  template class WaveletGpu<float, MorletWavelet>;
-  template class WaveletGpu<double, MorletWavelet>;
-  template class WaveletGpu<float, ShannonWavelet>;
-  template class WaveletGpu<double, ShannonWavelet>;
-  template class WaveletGpu<float, FbspWavelet>;
-  template class WaveletGpu<double, FbspWavelet>;
+template class WaveletGpu<float, HaarWavelet>;
+template class WaveletGpu<double, HaarWavelet>;
+template class WaveletGpu<float, GaussianWavelet>;
+template class WaveletGpu<double, GaussianWavelet>;
+template class WaveletGpu<float, MexicanHatWavelet>;
+template class WaveletGpu<double, MexicanHatWavelet>;
+template class WaveletGpu<float, MorletWavelet>;
+template class WaveletGpu<double, MorletWavelet>;
+template class WaveletGpu<float, ShannonWavelet>;
+template class WaveletGpu<double, ShannonWavelet>;
+template class WaveletGpu<float, FbspWavelet>;
+template class WaveletGpu<double, FbspWavelet>;
 
 }  // namespace signal
 }  // namespace kernels
