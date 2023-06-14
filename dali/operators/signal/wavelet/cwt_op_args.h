@@ -1,4 +1,4 @@
-// Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+// Copyright (c) 2019-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DALI_KERNELS_SIGNAL_WAVELET_CWT_ARGS_H_
-#define DALI_KERNELS_SIGNAL_WAVELET_CWT_ARGS_H_
+#ifndef DALI_OPERATORS_SIGNAL_WAVELET_CWT_OP_ARGS_H_
+#define DALI_OPERATORS_SIGNAL_WAVELET_CWT_OP_ARGS_H_
+
+#include <vector>
+#include "dali/operators/signal/wavelet/wavelet_name.h"
 
 namespace dali {
-namespace kernels {
-namespace signal {
 
 template <typename T = float>
-struct CwtArgs {
-  T a;
+struct CwtOpArgs {
+  std::vector<T> a;
+  DALIWaveletName wavelet;
+  std::vector<T> args;
 };
 
-}  // namespace signal
-}  // namespace kernels
 }  // namespace dali
 
-#endif  // DALI_KERNELS_SIGNAL_WAVELET_CWT_ARGS_H_
+#endif  // DALI_OPERATORS_SIGNAL_WAVELET_CWT_OP_ARGS_H_

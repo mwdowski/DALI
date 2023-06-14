@@ -12,16 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
-#define DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
+#ifndef DALI_OPERATORS_SIGNAL_WAVELET_CWT_OP_H_
+#define DALI_OPERATORS_SIGNAL_WAVELET_CWT_OP_H_
 
 #include <memory>
 #include <vector>
 #include "dali/core/common.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
+#include "dali/operators/signal/wavelet/cwt_op_args.h"
+#include "dali/operators/signal/wavelet/wavelet_name.h"
+#include "dali/pipeline/data/types.h"
 #include "dali/pipeline/operator/common.h"
 #include "dali/pipeline/operator/operator.h"
 #include "dali/pipeline/util/operator_impl_utils.h"
+
+static constexpr int kNumInputs = 1;
+static constexpr int kNumOutputs = 1;
 
 namespace dali {
 
@@ -32,29 +38,26 @@ class Cwt : public Operator<Backend> {
     if (!spec.HasArgument("a")) {
       DALI_ENFORCE("`a` argument must be provided.");
     }
-    args_.a = spec.GetArgument<float>("a");
+    args_.a = spec.GetArgument<std::vector<float>>("a");
+
+    if (!spec.HasArgument("wavelet")) {
+      DALI_ENFORCE("`wavelet` argument must be provided.");
+    }
+    args_.wavelet = spec.GetArgument<DALIWaveletName>("wavelet");
   }
 
  protected:
   bool CanInferOutputs() const override {
     return true;
   }
-
-  bool SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) override {
-    assert(impl_ != nullptr);
-    return impl_->SetupImpl(output_desc, ws);
-  }
-
-  void RunImpl(Workspace &ws) override {
-    assert(impl_ != nullptr);
-    impl_->RunImpl(ws);
-  }
+  bool SetupImpl(std::vector<OutputDesc> &output_desc, const Workspace &ws) override;
+  void RunImpl(Workspace &ws) override;
 
   USE_OPERATOR_MEMBERS();
   using Operator<Backend>::RunImpl;
 
   kernels::KernelManager kmgr_;
-  kernels::signal::wavelet::CwtArgs<float> args_;
+  CwtOpArgs<float> args_;
 
   std::unique_ptr<OpImplBase<Backend>> impl_;
   DALIDataType type_ = DALI_NO_TYPE;
@@ -62,4 +65,4 @@ class Cwt : public Operator<Backend> {
 
 }  // namespace dali
 
-#endif  // DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
+#endif  // DALI_OPERATORS_SIGNAL_WAVELET_CWT_OP_H_

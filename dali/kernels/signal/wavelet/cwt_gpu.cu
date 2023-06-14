@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cmath>
-#include <complex>
+#include <memory>
+#include <utility>
 #include <vector>
 #include "dali/core/common.h"
 #include "dali/core/error_handling.h"
 #include "dali/core/format.h"
+#include "dali/core/static_switch.h"
 #include "dali/kernels/kernel.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/kernels/signal/wavelet/cwt_gpu.h"
@@ -25,7 +26,6 @@
 namespace dali {
 namespace kernels {
 namespace signal {
-namespace wavelet {
 
 template <typename T>
 struct SampleDesc {
@@ -92,7 +92,6 @@ void CwtGpu<T>::Run(KernelContext &context, const OutListGPU<T, DynamicDimension
 template class CwtGpu<float>;
 template class CwtGpu<double>;
 
-}  // namespace wavelet
 }  // namespace signal
 }  // namespace kernels
 }  // namespace dali
