@@ -18,6 +18,7 @@
 #include <variant>
 #include <vector>
 #include "dali/kernels/signal/wavelet/mother_wavelet.cuh"
+#include "dali/operators/signal/wavelet/wavelet_name.h"
 
 namespace dali {
 namespace kernels {

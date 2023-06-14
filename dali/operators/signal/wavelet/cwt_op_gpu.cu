@@ -20,13 +20,20 @@
 #include "dali/kernels/kernel_params.h"
 #include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/kernels/signal/wavelet/cwt_gpu.h"
+#include "dali/kernels/signal/wavelet/wavelet_args.h"
 #include "dali/operators/signal/wavelet/cwt_op.h"
+#include "dali/operators/signal/wavelet/wavelet_name.h"
+#include "dali/pipeline/data/types.h"
 #include "dali/pipeline/data/views.h"
 
 namespace dali {
 
-DALI_SCHEMA(Cwt).DocStr("by MW").NumInput(1).NumOutput(1).AddArg("a", "costam",
-                                                                 type2id<float>::value);
+DALI_SCHEMA(Cwt)
+    .DocStr("by MW")
+    .NumInput(1)
+    .NumOutput(1)
+    .AddArg("a", "costam", type2id<float>::value)
+    .AddArg("mother_wavelet", "todo", DALIDataType.DALI_WAVELET_NAME);
 
 template <typename T>
 struct CwtImplGPU : public OpImplBase<GPUBackend> {
