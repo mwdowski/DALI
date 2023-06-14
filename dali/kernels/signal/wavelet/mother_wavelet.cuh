@@ -33,8 +33,8 @@ namespace signal {
 
 template <typename T>
 class HaarWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   HaarWavelet() = default;
   explicit HaarWavelet(const std::vector<T> &args);
@@ -45,22 +45,23 @@ class HaarWavelet {
 
 template <typename T>
 class GaussianWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   GaussianWavelet() = default;
   explicit GaussianWavelet(const std::vector<T> &args);
   ~GaussianWavelet() = default;
 
   __device__ T operator()(const T &t) const;
+
  private:
   T n;
 };
 
 template <typename T>
 class MexicanHatWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   MexicanHatWavelet() = default;
   explicit MexicanHatWavelet(const std::vector<T> &args);
@@ -74,8 +75,8 @@ class MexicanHatWavelet {
 
 template <typename T>
 class MorletWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   MorletWavelet() = default;
   explicit MorletWavelet(const std::vector<T> &args);
@@ -89,8 +90,8 @@ class MorletWavelet {
 
 template <typename T>
 class ShannonWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   ShannonWavelet() = default;
   explicit ShannonWavelet(const std::vector<T> &args);
@@ -105,8 +106,8 @@ class ShannonWavelet {
 
 template <typename T>
 class FbspWavelet {
-  static_assert(std::is_floating_point<T>::value,
-    "Data type should be floating point");
+  static_assert(std::is_floating_point<T>::value, "Data type should be floating point");
+
  public:
   FbspWavelet() = default;
   explicit FbspWavelet(const std::vector<T> &args);

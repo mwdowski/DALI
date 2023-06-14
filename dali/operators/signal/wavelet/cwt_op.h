@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DALI_OPERATORS_SIGNAL_WAVELETS_CWT_H_
-#define DALI_OPERATORS_SIGNAL_WAVELETS_CWT_H_
+#ifndef DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
+#define DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_
 
 #include <memory>
 #include <vector>
 #include "dali/core/common.h"
-#include "dali/kernels/signal/wavelets/cwt_args.h"
+#include "dali/kernels/signal/wavelet/cwt_args.h"
 #include "dali/pipeline/operator/common.h"
 #include "dali/pipeline/operator/operator.h"
 #include "dali/pipeline/util/operator_impl_utils.h"
@@ -54,7 +54,7 @@ class Cwt : public Operator<Backend> {
   using Operator<Backend>::RunImpl;
 
   kernels::KernelManager kmgr_;
-  kernels::signal::wavelets::CwtArgs<float> args_;
+  kernels::signal::wavelet::CwtArgs<float> args_;
 
   std::unique_ptr<OpImplBase<Backend>> impl_;
   DALIDataType type_ = DALI_NO_TYPE;
@@ -62,4 +62,4 @@ class Cwt : public Operator<Backend> {
 
 }  // namespace dali
 
-#endif  // DALI_OPERATORS_SIGNAL_WAVELETS_CWT_H_
+#endif  // DALI_OPERATORS_SIGNAL_WAVELET_CWT_H_

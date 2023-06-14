@@ -19,8 +19,8 @@
 #include "dali/core/error_handling.h"
 #include "dali/core/format.h"
 #include "dali/kernels/kernel.h"
-#include "dali/kernels/signal/wavelets/cwt_args.h"
-#include "dali/kernels/signal/wavelets/cwt_gpu.h"
+#include "dali/kernels/signal/wavelet/cwt_args.h"
+#include "dali/kernels/signal/wavelet/cwt_gpu.h"
 
 namespace dali {
 namespace kernels {

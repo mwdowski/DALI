@@ -18,9 +18,9 @@
 #include "dali/core/static_switch.h"
 #include "dali/kernels/kernel_manager.h"
 #include "dali/kernels/kernel_params.h"
-#include "dali/kernels/signal/wavelets/cwt_args.h"
-#include "dali/kernels/signal/wavelets/cwt_gpu.h"
-#include "dali/operators/signal/wavelets/cwt_op.h"
+#include "dali/kernels/signal/wavelet/cwt_args.h"
+#include "dali/kernels/signal/wavelet/cwt_gpu.h"
+#include "dali/operators/signal/wavelet/cwt_op.h"
 #include "dali/pipeline/data/views.h"
 
 namespace dali {
@@ -31,8 +31,8 @@ DALI_SCHEMA(Cwt).DocStr("by MW").NumInput(1).NumOutput(1).AddArg("a", "costam",
 template <typename T>
 struct CwtImplGPU : public OpImplBase<GPUBackend> {
  public:
-  using CwtArgs = kernels::signal::wavelets::CwtArgs<T>;
-  using CwtKernel = kernels::signal::wavelets::CwtGpu<T>;
+  using CwtArgs = kernels::signal::wavelet::CwtArgs<T>;
+  using CwtKernel = kernels::signal::wavelet::CwtGpu<T>;
 
   explicit CwtImplGPU(CwtArgs args) : args_(std::move(args)) {
     kmgr_cwt_.Resize<CwtKernel>(1);
