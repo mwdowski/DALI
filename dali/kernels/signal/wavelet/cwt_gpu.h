@@ -35,7 +35,7 @@ class DLL_PUBLIC CwtGpu {
   DLL_PUBLIC ~CwtGpu();
 
   DLL_PUBLIC KernelRequirements Setup(KernelContext &context,
-                                      const InListGPU<T, DynamicDimensions> &in);
+                                      const InListGPU<T, DynamicDimensions> &in, CwtArgs<T> &args);
 
   DLL_PUBLIC void Run(KernelContext &context, const OutListGPU<T, DynamicDimensions> &out,
                       const InListGPU<T, DynamicDimensions> &in, const CwtArgs<T> &args);

@@ -53,7 +53,7 @@ CwtGpu<T>::~CwtGpu() = default;
 
 template <typename T>
 KernelRequirements CwtGpu<T>::Setup(KernelContext &context,
-                                    const InListGPU<T, DynamicDimensions> &in) {
+                                    const InListGPU<T, DynamicDimensions> &in, CwtArgs<T> &args) {
   auto out_shape = in.shape;
   const size_t num_samples = in.size();
   ScratchpadEstimator se;

@@ -29,8 +29,19 @@ namespace dali {
 // setups and runs kernel for specific wavelet type
 template <typename T, template <typename> class W >
 void RunWaveletKernel(kernels::KernelManager &kmgr,
-                      size_t size,
-                      size_t device,
+                      kernels::KernelContext &ctx,
+                      TensorListView<StorageGPU, T> &out,
+                      TensorListView<StorageGPU, const T>  &a,
+                      TensorListView<StorageGPU, const T> &b,
+                      const kernels::signal::WaveletSpan<T> &span,
+                      const std::vector<T> &args) {
+  using Kernel = kernels::signal::WaveletGpu<T, W>;
+  kmgr.Run<Kernel>(0, ctx, out, a, b, span);
+}
+
+// setups kernel for specific wavelet type
+template <typename T, template <typename> class W >
+void SetupWaveletKernel(kernels::KernelManager &kmgr,
                       kernels::KernelContext &ctx,
                       TensorListView<StorageGPU, T> &out,
                       TensorListView<StorageGPU, const T>  &a,
@@ -40,15 +51,12 @@ void RunWaveletKernel(kernels::KernelManager &kmgr,
   using Kernel = kernels::signal::WaveletGpu<T, W>;
   kmgr.template Resize<Kernel>(1);
   kmgr.Setup<Kernel>(0, ctx, a, b, span, args);
-  kmgr.Run<Kernel>(0, ctx, out, a, b, span);
 }
 
 // translates wavelet name to type and runs RunWaveletKernel() for that type
 template <typename T>
 void RunForName(const DALIWaveletName &name,
                 kernels::KernelManager &kmgr,
-                size_t size,
-                size_t device,
                 kernels::KernelContext &ctx,
                 TensorListView<StorageGPU, T> &out,
                 TensorListView<StorageGPU, const T> &a,
@@ -58,27 +66,67 @@ void RunForName(const DALIWaveletName &name,
   switch (name) {
   case DALIWaveletName::DALI_HAAR:
     using kernels::signal::HaarWavelet;
-    RunWaveletKernel<T, HaarWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
+    RunWaveletKernel<T, HaarWavelet>(kmgr, ctx, out, a, b, span, args);
     break;
   case DALIWaveletName::DALI_GAUS:
     using kernels::signal::GaussianWavelet;
-    RunWaveletKernel<T, GaussianWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
+    RunWaveletKernel<T, GaussianWavelet>(kmgr, ctx, out, a, b, span, args);
     break;
   case DALIWaveletName::DALI_MEXH:
     using kernels::signal::MexicanHatWavelet;
-    RunWaveletKernel<T, MexicanHatWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
+    RunWaveletKernel<T, MexicanHatWavelet>(kmgr, ctx, out, a, b, span, args);
     break;
   case DALIWaveletName::DALI_MORL:
     using kernels::signal::MorletWavelet;
-    RunWaveletKernel<T, MorletWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
+    RunWaveletKernel<T, MorletWavelet>(kmgr, ctx, out, a, b, span, args);
     break;
   case DALIWaveletName::DALI_SHAN:
     using kernels::signal::ShannonWavelet;
-    RunWaveletKernel<T, ShannonWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
+    RunWaveletKernel<T, ShannonWavelet>(kmgr, ctx, out, a, b, span, args);
     break;
   case DALIWaveletName::DALI_FBSP:
     using kernels::signal::FbspWavelet;
-    RunWaveletKernel<T, FbspWavelet>(kmgr, size, device, ctx, out, a, b, span, args);
+    RunWaveletKernel<T, FbspWavelet>(kmgr, ctx, out, a, b, span, args);
+    break;
+  default:
+    throw new std::invalid_argument("Unknown wavelet name.");
+  }
+}
+
+// translates wavelet name to type and runs RunWaveletKernel() for that type
+template <typename T>
+void SetupForName(const DALIWaveletName &name,
+                kernels::KernelManager &kmgr,
+                kernels::KernelContext &ctx,
+                TensorListView<StorageGPU, T> &out,
+                TensorListView<StorageGPU, const T> &a,
+                TensorListView<StorageGPU, const T> &b,
+                const kernels::signal::WaveletSpan<T> &span,
+                const std::vector<T> &args) {
+  switch (name) {
+  case DALIWaveletName::DALI_HAAR:
+    using kernels::signal::HaarWavelet;
+    SetupWaveletKernel<T, HaarWavelet>(kmgr, ctx, out, a, b, span, args);
+    break;
+  case DALIWaveletName::DALI_GAUS:
+    using kernels::signal::GaussianWavelet;
+    SetupWaveletKernel<T, GaussianWavelet>(kmgr, ctx, out, a, b, span, args);
+    break;
+  case DALIWaveletName::DALI_MEXH:
+    using kernels::signal::MexicanHatWavelet;
+    SetupWaveletKernel<T, MexicanHatWavelet>(kmgr, ctx, out, a, b, span, args);
+    break;
+  case DALIWaveletName::DALI_MORL:
+    using kernels::signal::MorletWavelet;
+    SetupWaveletKernel<T, MorletWavelet>(kmgr, ctx, out, a, b, span, args);
+    break;
+  case DALIWaveletName::DALI_SHAN:
+    using kernels::signal::ShannonWavelet;
+    SetupWaveletKernel<T, ShannonWavelet>(kmgr, ctx, out, a, b, span, args);
+    break;
+  case DALIWaveletName::DALI_FBSP:
+    using kernels::signal::FbspWavelet;
+    SetupWaveletKernel<T, FbspWavelet>(kmgr, ctx, out, a, b, span, args);
     break;
   default:
     throw new std::invalid_argument("Unknown wavelet name.");

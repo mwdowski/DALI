@@ -91,26 +91,43 @@ DLL_PUBLIC void WaveletGpu<T, W>::Run(KernelContext &ctx, OutListGPU<T> &out, co
                                       const InListGPU<T> &b, const WaveletSpan<T> &span) {
   ENFORCE_SHAPES(a.shape, b.shape);
 
+  std::cout << "a\n";
   auto num_samples = a.num_samples();
+  std::cout << "a\n";
   std::vector<SampleDesc<T>> sample_data = std::vector<SampleDesc<T>>(num_samples);
+  std::cout << "a\n";
   int64_t max_size_in = 0, max_size_a = 0;
+  std::cout << "a\n";
 
   for (int i = 0; i < num_samples; i++) {
+    std::cout << i << "b\n";
     auto &sample = sample_data[i];
-    sample.out = out.tensor_data(i);
+    std::cout << i << "b\n";
+    sample.out = out.tensor_data(i);  // <- to się wywala
+    std::cout << i << "b\n";
     sample.a = a.tensor_data(i);
+    std::cout << i << "b\n";
     sample.size_a = a.shape.tensor_size(i);
+    std::cout << i << "b\n";
     max_size_a = std::max(max_size_a, sample.size_a);
+    std::cout << i << "b\n";
     sample.b = b.tensor_data(i);
+    std::cout << i << "b\n";
     sample.size_b = b.shape.tensor_size(i);
+    std::cout << i << "b\n";
     sample.span = span;
+    std::cout << i << "b\n";
     sample.size_in =
         std::ceil((sample.span.end - sample.span.begin) * sample.span.sampling_rate) + 1;
+    std::cout << i << "b\n";
     sample.in = ctx.scratchpad->AllocateGPU<T>(sample.size_in);
+    std::cout << i << "b\n";
     max_size_in = std::max(max_size_in, sample.size_in);
   }
 
+  std::cout << "a\n";
   auto *sample_data_gpu = std::get<0>(ctx.scratchpad->ToContiguousGPU(ctx.gpu.stream, sample_data));
+  std::cout << "a\n";
 
   dim3 block(32, 32);
   const int64_t block_size = block.x * block.y;
@@ -118,8 +135,11 @@ DLL_PUBLIC void WaveletGpu<T, W>::Run(KernelContext &ctx, OutListGPU<T> &out, co
   dim3 grid2((max_size_in + block_size - 1) / block_size, max_size_a, num_samples);
 
   ComputeInputSamples<<<grid1, block, 0, ctx.gpu.stream>>>(sample_data_gpu);
+  std::cout << "a\n";
   auto shared_mem_size = (block_size + 1) * sizeof(T);
+  std::cout << "a\n";
   ComputeWavelet<<<grid2, block, shared_mem_size, ctx.gpu.stream>>>(sample_data_gpu, wavelet_);
+  std::cout << "a\n";
 }
 
 template <typename T, template <typename> class W>

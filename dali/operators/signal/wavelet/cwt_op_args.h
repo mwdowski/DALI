@@ -24,7 +24,7 @@ template <typename T = float>
 struct CwtOpArgs {
   std::vector<T> a;
   DALIWaveletName wavelet;
-  std::vector<T> args;
+  std::vector<T> wavelet_args;
 };
 
 }  // namespace dali

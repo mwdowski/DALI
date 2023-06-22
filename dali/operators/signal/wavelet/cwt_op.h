@@ -44,6 +44,10 @@ class Cwt : public Operator<Backend> {
       DALI_ENFORCE("`wavelet` argument must be provided.");
     }
     args_.wavelet = spec.GetArgument<DALIWaveletName>("wavelet");
+
+    if (spec.HasArgument("wavelet_args")) {
+      args_.wavelet_args = spec.GetArgument<std::vector<float>>("wavelet_args");
+    }
   }
 
  protected:

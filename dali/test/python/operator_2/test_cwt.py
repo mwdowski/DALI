@@ -24,7 +24,7 @@ def get_data(sample_info):
     s4 = np.array([5.23, 4.6, 10.2, 0.85, 0.3], dtype=np.float32)
     s5 = np.array([5.3, 4.6, 103.2, 0.8, 0.36, 4.4], dtype=np.float32)
 
-    result_list = [s1, s2, s3, s4, s5]
+    result_list = [s1, s2]#, s3, s4, s5]
 
     return result_list[sample_info.idx_in_batch]
 
@@ -32,11 +32,11 @@ def get_data(sample_info):
 @pipeline_def(num_threads=1, device_id=0)
 def get_pipeline():
     data = fn.external_source(get_data, batch=False, dtype=types.FLOAT)
-    result = fn.cwt(data.gpu(), device="gpu", a=[2, 4], wavelet=types.DALIWaveletName.MEXH)
+    result = fn.cwt(data.gpu(), device="gpu", a=[2, 4], wavelet=types.DALIWaveletName.MEXH, wavelet_args=[1.0])
     return data, result
 
 
-pipe = get_pipeline(batch_size=5, device_id=0)
+pipe = get_pipeline(batch_size=2, device_id=0)
 pipe.build()
 d, r = pipe.run()
 
