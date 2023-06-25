@@ -108,7 +108,7 @@ bool CwtImplGPU<T>::SetupImpl(std::vector<OutputDesc> &output_desc, const Worksp
   */
 
   gpu_a_ptr = mm::alloc_raw_unique<T, mm::memory_kind::device>(args_.a.size());
-  gpu_a = make_tensor_list_gpu<-1>(gpu_a_ptr.get(), uniform_list_shape(args_.a.size(), {1}));
+  gpu_a = make_tensor_list_gpu<-1>(gpu_a_ptr.get(), uniform_list_shape(1, {args_.a.size()}));
   CUDA_CALL(cudaMemcpyAsync(gpu_a_ptr.get(), args_.a.data(), args_.a.size() * sizeof(T),
                             cudaMemcpyHostToDevice, ctx.gpu.stream));
   std::cout << args_.a << std::endl;
@@ -116,10 +116,11 @@ bool CwtImplGPU<T>::SetupImpl(std::vector<OutputDesc> &output_desc, const Worksp
   PRINTLINE();
   // TensorListView<StorageGPU, T> b_in;
   // gpu_b.shape = uniform_list_shape(args_.a.size(), {1});
-  gpu_b_ptr = mm::alloc_raw_unique<T, mm::memory_kind::device>(args_.a.size());
-  gpu_b = make_tensor_list_gpu<-1>(gpu_b_ptr.get(), uniform_list_shape(args_.a.size(), {1}));
-  CUDA_CALL(cudaMemcpyAsync(gpu_b_ptr.get(), args_.a.data(), args_.a.size() * sizeof(T),
-                            cudaMemcpyHostToDevice, ctx.gpu.stream));
+  T zero = 0;
+  gpu_b_ptr = mm::alloc_raw_unique<T, mm::memory_kind::device>(1);
+  gpu_b = make_tensor_list_gpu<-1>(gpu_b_ptr.get(), uniform_list_shape(1, {1}));
+  CUDA_CALL(
+      cudaMemcpyAsync(gpu_b_ptr.get(), &zero, sizeof(T), cudaMemcpyHostToDevice, ctx.gpu.stream));
   PRINTLINE();
   /*
   b_in.resize(1);
